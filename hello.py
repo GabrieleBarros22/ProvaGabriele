@@ -43,8 +43,8 @@ class User(db.Model):
 
 
 class NameForm(FlaskForm):
-    name = StringField('What is your name?', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    name = StringField('Cadastre o novo Aluno:', validators=[DataRequired()])
+    submit = SubmitField('Cadastrar')
 
 
 @app.shell_context_processor
@@ -68,7 +68,7 @@ def index():
     user_all = User.query.all();
     print(user_all);
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.name.data).first()                
+        user = User.query.filter_by(username=form.name.data).first()
         if user is None:
             user_role = Role.query.filter_by(name='User').first();
             user = User(username=form.name.data, role=user_role);
