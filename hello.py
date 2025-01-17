@@ -7,12 +7,13 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
+app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -65,13 +66,12 @@ def internal_server_error(e):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
-    user_all = User.query.all();
-    print(user_all);
+    user_all = User.query.all()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.name.data).first()
         if user is None:
-            user_role = Role.query.filter_by(name='User').first();
-            user = User(username=form.name.data, role=user_role);
+            user_role = Role.query.filter_by(name='User').first()
+            user = User(username=form.name.data, role=user_role)
             db.session.add(user)
             db.session.commit()
             session['known'] = False
@@ -81,4 +81,30 @@ def index():
         return redirect(url_for('index'))
     return render_template('index.html', form=form, name=session.get('name'),
                            known=session.get('known', False),
-                           user_all=user_all);
+                           user_all=user_all)
+
+
+@app.route('/avaliacao')
+def avaliacao_semestral():
+    aluno = "Gabriele Barros"
+    prontuario = "PT3026787"
+    data_hora = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    return render_template('avaliacao.html', aluno=aluno, prontuario=prontuario, data_hora=data_hora)
+
+
+@app.route('/cadastro-professores')
+def cadastro_professores():
+    data_hora = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    return render_template('cadastro_professores.html', data_hora=data_hora)
+
+
+@app.route('/cadastro-disciplinas')
+def cadastro_disciplinas():
+    data_hora = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    return render_template('cadastro_disciplinas.html', data_hora=data_hora)
+
+
+@app.route('/cadastro-cursos')
+def cadastro_cursos():
+    data_hora = datetime.now().strftime("%B %d, %Y %I:%M %p")
+    return render_template('cadastro_cursos.html', data_hora=data_hora)
